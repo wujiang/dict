@@ -5,7 +5,7 @@ Look up words from dictionary
 
 Usage
 -----
-::
+
     usage: def [-h] [--example] [--etymology] [--phrase] [--related] word
 
     positional arguments:
