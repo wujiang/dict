@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import argparse
+
+from wordnik import *
+
+api_url = "http://api.wordnik.com/v4"
+api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+client = swagger.ApiClient(api_key, api_url)
+word_api = WordApi.WordApi(client)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("word", help="word to look up")
+parser.add_argument("--example", "-i", action="store_true",
+                    help="show examples")
+parser.add_argument("--etymology", "-e", action="store_true", help="etymology")
+parser.add_argument("--phrase", "-p", action="store_true", help="phrases")
+parser.add_argument("--related", "-r", action="store_true",
+                    help="related words")
+args = parser.parse_args()
+
+
+def get_def(word):
+    definitions = word_api.getDefinitions(word)
+    pron = word_api.getTextPronunciations(word)
+    result = ""
+    if pron:
+        result += pron[0].raw
+    if definitions:
+        result += definitions[0].text
+
+    return result
+
+
+def get_example(word):
+    example = word_api.getTopExample(word)
+    if example:
+        return example.text
+
+
+def get_etymology(word):
+    etymologies = word_api.getEtymologies(word)
+    if etymologies:
+        return etymologies[0]
+
+
+def get_phrase(word):
+    phrases = word_api.getPhrases(word)
+    if phrases:
+        return "{}, {}".format(phrases[0].gram1, phrases[0].gram2)
+
+
+def get_related(word):
+    related = word_api.getRelatedWords(word)
+    if related:
+        return ", ".join(related[0].words)
+
+
+if __name__ == "__main__":
+    print(get_def(args.word))
+
+    if args.example:
+        print(get_example(args.word))
+
+    if args.etymology:
+        print(get_etymology(args.word))
+
+    if args.phrase:
+        print(get_phrase(args.word))
+
+    if args.related:
+        print(get_related(args.word))
